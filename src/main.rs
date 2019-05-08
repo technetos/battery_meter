@@ -26,7 +26,7 @@ impl From<std::num::ParseIntError> for Error {
 }
 
 fn read_file(charge: &str, energy: &str) -> Result<u64, Error> {
-    let mut value = String::new();
+    let mut buf = [0; 8];
 
     let mut file = fs::File::open(charge);
     if file.is_err() {
@@ -34,8 +34,8 @@ fn read_file(charge: &str, energy: &str) -> Result<u64, Error> {
     }
 
     let mut file = file?;
-    let _ = file.read_to_string(&mut value);
-    let num = u64::from_str(&value[..&value.len()-1])?;
+    file.read(&mut buf[..])?;
+    let num = u64::from_ne_bytes(buf);
     Ok(num)
 }
 
